@@ -30,6 +30,12 @@ def generate_responcse(
         )
 
     generated_text = tokenizer.decode(output_ids[0][input_ids.shape[-1]:], skip_special_tokens=True)
+    stop_tokens = ['\n', 'User:', 'Chat Bot:']
+    for token in stop_tokens:
+        idx = generated_text.find(token)
+        if idx != -1:
+            generated_text = generated_text[:idx].strip()
+            break
     return generated_text
 
 def prompt(conversation_history, user_input):
