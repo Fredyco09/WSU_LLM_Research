@@ -11,18 +11,22 @@ def generate_responcse(
         top_k=50,
 
 ):
-    #
-    input_ids = tokenizer.encode(prompt, return_tensors='pt')
+    inputs = tokenizer(prompt, return_tensors='pt')
+    input_ids = inputs['input_ids']
+    attention_mask = inputs['attention_mask']
+    
+    
 
     with torch.no_grad():
         output_ids = model.generate(
-            input_ids,
+            input_ids=input_ids,
+            attention_mask=attention_mask,
             max_length=max_length,
             temperature=temperature,
             top_p=top_p,
             top_k=top_k,
             do_sample=True,
-            pad_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.eos_token_id,
         )
 
     generated_text = tokenizer.decode(output_ids[0][input_ids.shape[-1]:], skip_special_tokens=True)
@@ -40,12 +44,12 @@ def prompt(conversation_history, user_input):
 
 def main():
 
-    model_name = "got2-medium"
+    model_name = "gpt2-medium"
     tokenizer = GPT2Tokenizer.from_pretrained(model_name)
     model = GPT2LMHeadModel.from_pretrained(model_name)
     model.eval()
 
-    max_length = 50
+    max_length = 100
     temperature = 1.0
     top_p = 0.9
     top_k = 50
@@ -53,7 +57,7 @@ def main():
 
     print(f"Loaded model '{model_name}' Chatbot is ready!. Type 'exit' to quit.\n")
 
-    conversation_history = []
+    conversation_history = [] 
 
     while True:
 
